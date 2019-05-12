@@ -6,11 +6,14 @@ const FilterTypes = {
 }
 
 function EntrantRating(props) {
-  const [entrantGroups, setEntrantGroups] = React.useState(props.initialEntrantGroups || []);
-  const [filterState, setFilterState] = React.useState({type: props.initialFilterType || FilterTypes.ALL, query: props.initialSearchQuery || ""});
+  const [entrantGroups, setEntrantGroups] = React.useState(props.initialItems || []);
+  const [filterState, setFilterState] = React.useState({ type: props.initialFilterType || FilterTypes.ALL, query: props.initialSearchQuery || "" });
 
   const [isInitialRender, setIsInitialRender] = React.useState(true);
   const [isLoadingInProgress, setIsLoadingInProgress] = React.useState(false);
+
+  const querySearchParam = "query";
+  const typeSearchParam = "status";
 
   React.useEffect(() => {
     console.log("useEffect");
@@ -24,12 +27,12 @@ function EntrantRating(props) {
 
 
   function fetchData() {
-    let url = `https://rut-miit.ru/data-service/data/entrant-rating?id=${props.id}&status=${filterState.type}&context_path=/&id_lang=1`;
+    let url = `https://rut-miit.ru/data-service/data/entrant-rating?id=${props.id}&${typeSearchParam}=${filterState.type}&context_path=/&id_lang=1`;
     // status=original&query=querytext
     if (filterState.query.length != 0) {
-      url += `&query=${filterState.query}`;
+      url += `&${querySearchParam}=${filterState.query}`;
     }
-    
+    setPageUrlParameters(url);
     console.log("fetching from url: " + url);
 
     setIsLoadingInProgress(true);
@@ -41,24 +44,48 @@ function EntrantRating(props) {
   }
 
 
+  function setPageUrlParameters(axajUrl) {
+    const ajaxSearchParams = new URLSearchParams(axajUrl);
+    const pageSearchParams = new URLSearchParams(location.search);
+
+    const ajaxUrlTypeFilter = ajaxSearchParams.get(typeSearchParam);
+    if (ajaxUrlTypeFilter == FilterTypes.ALL) {
+      pageSearchParams.delete(typeSearchParam);
+    } else {
+      pageSearchParams.set(typeSearchParam, ajaxUrlTypeFilter);
+    }
+    if (ajaxSearchParams.get(querySearchParam)) {
+      pageSearchParams.set(querySearchParam, ajaxSearchParams.get(querySearchParam));
+    } else {
+      pageSearchParams.delete(querySearchParam);
+    }
+    history.replaceState(history.state, "", "?" + pageSearchParams.toString());
+  }
+
+
   function handleFilterChange(newFilterState) {
-      setFilterState(newFilterState);
+    setFilterState(newFilterState);
   }
 
   return (
     <section className="applicants__list">
       Hello Entrant Rating
-      {isLoadingInProgress && <p>Loading...</p>}
-      {entrantGroups.length}
 
       <EntrantRatingFilter filterState={filterState}
-          handleFilterChange={handleFilterChange}
-          />
+        handleFilterChange={handleFilterChange}
+      />
 
-      {entrantGroups.map(entrantGroup => {
-        const groupKey = `${entrantGroup.sortIndex1}-${entrantGroup.sortIndex2}-${entrantGroup.sortIndex3}-${entrantGroup.sortIndex4}`
-        return <EntrantRatingGroup key={groupKey} group={entrantGroup} />
-      }
+      {isLoadingInProgress && <p>Loading...</p>}
+      group count: {entrantGroups.length}
+
+      {entrantGroups.length > 0 ? (
+        entrantGroups.map(entrantGroup => {
+          const groupKey = `${entrantGroup.sortIndex1}-${entrantGroup.sortIndex2}-${entrantGroup.sortIndex3}-${entrantGroup.sortIndex4}`
+          return <EntrantRatingGroup key={groupKey} group={entrantGroup} />
+        })
+      ) : (
+        isInitialRender === false &&
+          <span>No records</span>
       )}
     </section>
   )

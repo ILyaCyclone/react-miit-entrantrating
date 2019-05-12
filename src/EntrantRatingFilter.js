@@ -6,10 +6,10 @@
 'use strict';
 
 function EntrantRatingFilter(props) {
-  const [query, setQuery] = React.useState("");
-  const [submitedQuery, setSubmitedQuery] = React.useState(query);
   const { filterState } = props;
-  //filterState.query || 
+
+  const [query, setQuery] = React.useState(filterState.query || "");
+  const [submitedQuery, setSubmitedQuery] = React.useState(query);
   
 
   function onQueryBlur(event) {

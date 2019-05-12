@@ -1,0 +1,50 @@
+<html>
+
+<head>
+    <style>
+        html {
+            background-color: #aab;
+        }
+
+        .p-2 {
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>This is normal page</h1>
+    <h3>Here is come ordinary code</h3>
+
+    <div id="ApplicantsRating"></div>
+
+    <h3>And there is come ordinary code</h3>
+
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+    <script src="build/EntrantRatingItem.js"></script>
+    <script src="build/EntrantRating.js"></script>
+    <script>
+        window._EntrantRatingConfig = {
+            id: -47273
+            // able to set initial items
+            // initialItems: [{
+            //     title: "init item 1",
+            // },
+            // {
+            //     title: "init item 2"
+            // }
+            // ],
+        }
+
+        ReactDOM.render(React.createElement(EntrantRating, window._EntrantRatingConfig)
+            , document.querySelector("#ApplicantsRating"));
+    </script>
+
+
+</body>
+
+</html>

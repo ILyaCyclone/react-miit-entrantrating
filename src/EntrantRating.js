@@ -12,6 +12,9 @@ function EntrantRating(props) {
   const [isInitialRender, setIsInitialRender] = React.useState(true);
   const [isLoadingInProgress, setIsLoadingInProgress] = React.useState(false);
 
+  // let axiosCancelSource; // based on the WITHDRAWN cancelable promises proposal: https://github.com/tc39/proposal-cancelable-promises
+  const [axiosCancelSource, setAxiosCancelSource] = React.useState();
+
   const querySearchParam = "query";
   const typeSearchParam = "status";
 
@@ -41,10 +44,21 @@ function EntrantRating(props) {
     //     setEntrantGroups(entrantGroups);
     //     setIsLoadingInProgress(false);
     //   })
-    axios.get(url)
+    console.log("axiosCancelSource");
+    console.log(axiosCancelSource);
+    if (axiosCancelSource) { axiosCancelSource.cancel(); }
+    const newAxiosCancelSource = axios.CancelToken.source();
+    setAxiosCancelSource(newAxiosCancelSource);
+    axios.get(url, {
+      cancelToken: newAxiosCancelSource.token
+    })
       .then(res => setEntrantGroups(res.data))
       .catch(function (error) {
-        console.log(error);
+        if (axios.isCancel(error)) {
+          console.log('Request canceled', error.message);
+        } else {
+          console.log(error);
+        }
       })
       .finally(function () {
         setIsLoadingInProgress(false);
@@ -92,9 +106,9 @@ function EntrantRating(props) {
           return <EntrantRatingGroup key={groupKey} group={entrantGroup} />
         })
       ) : (
-        isInitialRender === false &&
+          isInitialRender === false &&
           <span>No records</span>
-      )}
+        )}
     </section>
   )
 }

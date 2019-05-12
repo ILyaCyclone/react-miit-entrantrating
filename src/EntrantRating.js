@@ -36,11 +36,19 @@ function EntrantRating(props) {
     console.log("fetching from url: " + url);
 
     setIsLoadingInProgress(true);
-    fetch(url).then(res => res.json())
-      .then(entrantGroups => {
-        setEntrantGroups(entrantGroups);
-        setIsLoadingInProgress(false);
+    // fetch(url).then(res => res.json())
+    //   .then(entrantGroups => {
+    //     setEntrantGroups(entrantGroups);
+    //     setIsLoadingInProgress(false);
+    //   })
+    axios.get(url)
+      .then(res => setEntrantGroups(res.data))
+      .catch(function (error) {
+        console.log(error);
       })
+      .finally(function () {
+        setIsLoadingInProgress(false);
+      });
   }
 
 

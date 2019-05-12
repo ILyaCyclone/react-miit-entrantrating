@@ -35,8 +35,6 @@ function EntrantRating(props) {
     setIsLoadingInProgress(true);
     fetch(url).then(res => res.json())
       .then(entrantGroups => {
-        console.log("fetched data:");
-        console.log(entrantGroups);
         setEntrantGroups(entrantGroups);
         setIsLoadingInProgress(false);
       })

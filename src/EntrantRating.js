@@ -43,15 +43,15 @@ function EntrantRating(props) {
   }
 
   return (
-    <div>
+    <section className="applicants__list">
       Hello Entrant Rating
       {isLoadingInProgress && <p>Loading...</p>}
       {entrantGroups.length}
       {entrantGroups.map(entrantGroup => {
         const groupKey = `${entrantGroup.sortIndex1}-${entrantGroup.sortIndex2}-${entrantGroup.sortIndex3}-${entrantGroup.sortIndex4}`
-        return <p key={groupKey}>{entrantGroup.botName}</p>
+        return <EntrantRatingGroup key={groupKey} group={entrantGroup} />
       }
       )}
-    </div>
+    </section>
   )
 }

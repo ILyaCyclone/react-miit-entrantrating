@@ -1,14 +1,13 @@
 'use strict';
 
-const SearchTypes = {
+const FilterTypes = {
   ALL: "all",
   ORIGINAL: "original"
 }
 
 function EntrantRating(props) {
   const [entrantGroups, setEntrantGroups] = React.useState(props.initialEntrantGroups || []);
-  const [searchQuery, setSearchQuery] = React.useState(props.initialSearchQuery || "");
-  const [searchType, setSearchType] = React.useState(props.initialSearchType || SearchTypes.ALL);
+  const [filterState, setFilterState] = React.useState({type: props.initialFilterType || FilterTypes.ALL, query: props.initialSearchQuery || ""});
 
   const [isInitialRender, setIsInitialRender] = React.useState(true);
   const [isLoadingInProgress, setIsLoadingInProgress] = React.useState(false);
@@ -20,16 +19,17 @@ function EntrantRating(props) {
     }
 
     setIsInitialRender(false);
-  }, [searchQuery, searchType]);
+  }, [filterState]);
 
 
 
   function fetchData() {
-    let url = `https://rut-miit.ru/data-service/data/entrant-rating?id=${props.id}&status=${searchType}&context_path=/&id_lang=1`;
+    let url = `https://rut-miit.ru/data-service/data/entrant-rating?id=${props.id}&status=${filterState.type}&context_path=/&id_lang=1`;
     // status=original&query=querytext
-    if (searchQuery.length != 0) {
-      url += `&query=${searchQuery}`;
+    if (filterState.query.length != 0) {
+      url += `&query=${filterState.query}`;
     }
+    
     console.log("fetching from url: " + url);
 
     setIsLoadingInProgress(true);
@@ -40,11 +40,21 @@ function EntrantRating(props) {
       })
   }
 
+
+  function handleFilterChange(newFilterState) {
+      setFilterState(newFilterState);
+  }
+
   return (
     <section className="applicants__list">
       Hello Entrant Rating
       {isLoadingInProgress && <p>Loading...</p>}
       {entrantGroups.length}
+
+      <EntrantRatingFilter filterState={filterState}
+          handleFilterChange={handleFilterChange}
+          />
+
       {entrantGroups.map(entrantGroup => {
         const groupKey = `${entrantGroup.sortIndex1}-${entrantGroup.sortIndex2}-${entrantGroup.sortIndex3}-${entrantGroup.sortIndex4}`
         return <EntrantRatingGroup key={groupKey} group={entrantGroup} />

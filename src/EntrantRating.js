@@ -44,12 +44,11 @@ function EntrantRating(props) {
     //     setEntrantGroups(entrantGroups);
     //     setIsLoadingInProgress(false);
     //   })
-    console.log("axiosCancelSource");
-    console.log(axiosCancelSource);
     if (axiosCancelSource) { axiosCancelSource.cancel(); }
     const newAxiosCancelSource = axios.CancelToken.source();
     setAxiosCancelSource(newAxiosCancelSource);
     axios.get(url, {
+      timeout: 15000,
       cancelToken: newAxiosCancelSource.token
     })
       .then(res => setEntrantGroups(res.data))

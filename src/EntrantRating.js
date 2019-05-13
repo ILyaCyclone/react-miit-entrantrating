@@ -12,7 +12,7 @@ function EntrantRating(props) {
   const [isInitialRender, setIsInitialRender] = React.useState(true);
   const [isLoadingInProgress, setIsLoadingInProgress] = React.useState(false);
 
-  // let axiosCancelSource; // based on the WITHDRAWN cancelable promises proposal: https://github.com/tc39/proposal-cancelable-promises
+  // axios cancel based on the WITHDRAWN cancelable promises proposal: https://github.com/tc39/proposal-cancelable-promises
   const [axiosCancelSource, setAxiosCancelSource] = React.useState();
 
   const querySearchParam = "query";
@@ -44,23 +44,28 @@ function EntrantRating(props) {
     //     setEntrantGroups(entrantGroups);
     //     setIsLoadingInProgress(false);
     //   })
+
     if (axiosCancelSource) { axiosCancelSource.cancel(); }
     const newAxiosCancelSource = axios.CancelToken.source();
     setAxiosCancelSource(newAxiosCancelSource);
     axios.get(url, {
-      timeout: 15000,
+      timeout: 30000,
       cancelToken: newAxiosCancelSource.token
     })
-      .then(res => setEntrantGroups(res.data))
+      .then(res => {
+        setEntrantGroups(res.data);
+        setIsLoadingInProgress(false);
+      })
       .catch(function (error) {
         if (axios.isCancel(error)) {
           console.log('Request canceled', error.message);
         } else {
+          setIsLoadingInProgress(false);
           console.log(error);
         }
       })
       .finally(function () {
-        setIsLoadingInProgress(false);
+        // setIsLoadingInProgress(false);
       });
   }
 
@@ -89,25 +94,27 @@ function EntrantRating(props) {
   }
 
   return (
-    <section className="applicants__list">
-      Hello Entrant Rating
+    <div class="row">
+      <section className="applicants__list">
+        Hello Entrant Rating
 
       <EntrantRatingFilter filterState={filterState}
-        handleFilterChange={handleFilterChange}
-      />
+          handleFilterChange={handleFilterChange}
+        />
 
-      {isLoadingInProgress && <p>Loading...</p>}
-      group count: {entrantGroups.length}
+        {isLoadingInProgress && <p>Loading...</p>}
+        group count: {entrantGroups.length}
 
-      {entrantGroups.length > 0 ? (
-        entrantGroups.map(entrantGroup => {
-          const groupKey = `${entrantGroup.sortIndex1}-${entrantGroup.sortIndex2}-${entrantGroup.sortIndex3}-${entrantGroup.sortIndex4}`
-          return <EntrantRatingGroup key={groupKey} group={entrantGroup} />
-        })
-      ) : (
-          isInitialRender === false &&
-          <span>No records</span>
-        )}
-    </section>
+        {entrantGroups.length > 0 ? (
+          entrantGroups.map(entrantGroup => {
+            const groupKey = `${entrantGroup.sortIndex1}-${entrantGroup.sortIndex2}-${entrantGroup.sortIndex3}-${entrantGroup.sortIndex4}`
+            return <EntrantRatingGroup key={groupKey} group={entrantGroup} />
+          })
+        ) : (
+            isInitialRender === false &&
+            <span>No records</span>
+          )}
+      </section>
+    </div>
   )
 }

@@ -21,7 +21,7 @@ function EntrantRatingItem(props) {
     <tr key={entrant.idE} className={itemClassName}>
       <td>{entrant.ratingIndex}</td>
       <td>
-        <img className="applicants__photo" src={entrant.entrantPhotoPreviewUrl} alt="" />
+        {/* <img className="applicants__photo" src={entrant.entrantPhotoPreviewUrl} alt="" /> */}
       </td>
       <td>
         <a href="/people/990842" className="js-app-name">{entrant.entrantFio}</a>
